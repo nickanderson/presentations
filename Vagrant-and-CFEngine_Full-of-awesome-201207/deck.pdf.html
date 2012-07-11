@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <title>Vagrant & CFEngine: Full of Awesome</title>
+   
+   
+
+<style>
+html, body { margin: 0; padding: 0; }
+
+body { font-family: Verdana, Geneva, Arial, Helvetica, sans-serif; }
+
+a:link, a:visited { color: black; }
+
+h1 { font-size: 30pt;  }
+h2 { font-size: 28pt;  }
+h3 { font-size: 25pt;  }
+p, li, dt, dd, td, th { font-size: 18pt; }
+
+pre { font-size: 14pt;  }
+pre.small { font-size: 11pt; }
+
+pre.code {
+        background-color: azure;
+        padding: 5px;
+      }
+     
+ul { list-style-type: square; }    
+   
+.center { text-align: center; }   
+     
+.slide { page-break-after: always;
+         min-height: 100mm;
+         padding: 40px;
+         
+         border: 1px dotted black;
+
+/*      
+  background: -moz-linear-gradient( top, maroon, red);
+*/
+       }
+
+    .s9_gradient_linear_silver_white_silver_white { background-image: -webkit-linear-gradient(top, silver, white, silver, white );
+                background-image: -moz-linear-gradient(top, silver, white, silver, white );
+                background-image: -ms-linear-gradient(top, silver, white, silver, white );
+                background-image: -o-linear-gradient(top, silver, white, silver, white );
+                background-image: linear-gradient(top, silver, white, silver, white );
+              }
+
+
+/*
+for princexml (CSS3 paged media support)
+@page { size: A4 landscape }
+*/
+</style>
+
+</head>
+<body>
+
+<div class="presentation">
+
+<div class='slide  s9_gradient_linear_silver_white_silver_white'>
+
+<!-- _S9SLIDE_ -->
+<h1 class="fullscreen">Vagrant &amp; CFEngine: Full of Awesome
+<!-- _S9STYLE_ s9_gradient_linear_silver_white_silver_white --></h1>
+<p><img src="images/vagrant_logo.png" alt="" />
+<img src="images/enterprize_robot_big.png" alt="" /></p>
+<p>Nick Anderson &#8211; July 2012</p>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>New Test Env Setup</h1>
+<!-- begin left {} -->
+<table width='100%'><tr><td width='50%' markdown='block' style='vertical-align: top;'>
+
+<ul>
+	<li>New developers</li>
+	<li>New projects</li>
+	<li>Different projects</li>
+	<li>Crazy testing</li>
+</ul>
+</td>
+<!-- end left -->
+
+<!-- begin right {} -->
+<td width='50%' markdown='block' style='vertical-align: top;'>
+
+<ul>
+	<li>slow</li>
+	<li>frustrating</li>
+</ul>
+</td></tr></table>
+<!-- end right -->
+
+<p>Usually manual instructions don&#8217;t get updated.</p>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>Solution</h1>
+<ul>
+	<li>Virtual Machines!</li>
+</ul>
+<ul>
+	<li class="step">They are BIG</li>
+	<li class="step">Prone to knowledge loss</li>
+	<li class="step">Not easily moved across platforms/bare metal</li>
+</ul>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>Better Solution</h1>
+<h2>Distill configuration to simple form</h2>
+<ul>
+	<li>Vagrant &#8211; Describe Virtual machines</li>
+	<li>CFEngine &#8211; Describe OS and application state configuration</li>
+</ul>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>Vagrant is</h1>
+<ul>
+	<li>Written in Ruby</li>
+	<li>Wrapper for Virtualbox</li>
+	<li>Easy to get started</li>
+</ul>
+<pre class='code'>
+Vagrant::Config.run do |config|
+  config.vm.box = "centos_6_x86_64_minimal_4.1.12"
+  config.vm.box_url = "https://dl.dropbox.com/u/5861161/vagrant/CentOS-6.0-x86_64-netboot-4.1.12.box"
+  config.vm.boot_mode = :gui
+  config.vm.define :cfhub do |hub_config|
+    hub_config.vm.host_name="cfhub"
+    hub_config.vm.network :hostonly, "10.1.1.10"
+    config.vm.forward_port 80, 8080
+  end
+end
+</pre>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>CFEngine is</h1>
+<ul>
+	<li>Written in C</li>
+	<li>Godfather of Configuration Managment systems</li>
+	<li>Difficult to get started
+	<ul>
+		<li class="step">But it gets easier</li>
+	</ul></li>
+</ul>
+<pre class='code'>
+bundle agent training_sshd_config_harden_permitrootlogin{
+  vars:
+    "bundlename" string =&gt; "training_sshd_config_harden_permitrootlogin";
+    "sshd_config_file" string =&gt; "/etc/ssh/sshd_config";
+
+  files:
+    "$(sshd_config_file)"
+      handle    =&gt; "$(bundlename)_files_sshd_config",
+      create    =&gt; "true",
+      edit_line =&gt; "training_sshd_config_harden_permitrootlogin",
+      classes   =&gt; if_repaired("restart_sshd"),
+      comment   =&gt; "Harden the sshd configuration.";
+
+  commands:
+    restart_sshd::
+      "/sbin/service"
+        args    =&gt; "sshd restart",
+        handle  =&gt; "$(bundlename)_commands_sshd_restart_after_hardening",
+        classes =&gt; "$(bundlename)_restarted_ssh",
+        comment =&gt; "Restart sshd after hardening the configuration";
+
+  reports:
+    restart_sshd::
+      "I was able to successfully restart sshd"
+        ifvarclass =&gt; "$(bundlename)_retarted_ssh";
+}
+bundle edit_line training_sshd_config_harden_permitrootlogin{
+  delete_lines:
+    "^\s*PermitRootLogin.*" -&gt; { "Security", "STIG GEN001120" }
+      handle  =&gt; "training_sshd_config_harden_permitrootlogin_delete_lines_permitrootlogin",
+      comment =&gt; "Clear up existing PermitRootLogin entries";
+
+  insert_lines:
+    "PermitRootLogin no   # GEN001120" -&gt; { "Security", "STIG GEN001120", "bofh@example.net"}
+      handle  =&gt; "training_sshd_config_harden_permitrootlogin_insert_lines_permitrootlogin",
+      comment =&gt; "Don't allow root to use SSH directly.";
+}
+
+
+</pre>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>Getting Started with CFEngine and Vagrant</h1>
+<h2>Sharing is careing, its on github, go forth and fork</h2>
+<p><a href="https://github.com/nickanderson/CFEngine-3-by-example-vagrant"><strong>https://github.com/nickanderson/CFEngine-3-by-example-vagrant</strong></a></p>
+<ol>
+	<li>Clone the project</li>
+	<li>Run make &amp;&amp; vagrant up</li>
+</ol>
+<pre class='code'>
+cd /tmp
+git clone https://github.com/nickanderson/CFEngine-3-by-example-vagrant.git
+cd /tmp/CFEngine-3-by-example-vagrant/
+git checkout fbb35eecd1d071a772e4fc5a85e9db711473d2c8
+make &amp;&amp; vagrant up
+</pre>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>CFEngine Design Center</h1>
+<!-- begin left {} -->
+<table width='100%'><tr><td width='50%' markdown='block' style='vertical-align: top;'>
+
+<h2>What it is</h2>
+<ul>
+	<li>Repository of community driven reusable policy</li>
+	<li>Curated by CFEngine staff</li>
+</ul>
+</td>
+<!-- end left -->
+
+<!-- begin right {} -->
+<td width='50%' markdown='block' style='vertical-align: top;'>
+
+<h2>Sketchs that can help you</h2>
+<ul>
+	<li>manage hosts file &#8211; <a href="https://github.com/cfengine/design-center/tree/master/sketches/system/etc_hosts">System::etc_hosts</a></li>
+	<li>manage resolver &#8211; <a href="https://github.com/cfengine/design-center/tree/master/sketches/system/config_resolver">System::config_resolver</a></li>
+	<li>manage timezone &#8211; <a href="https://github.com/cfengine/design-center/tree/master/sketches/system/tzconfig">System::tzconfig</a></li>
+	<li>configure sshd &#8211; <a href="https://github.com/cfengine/design-center/tree/master/sketches/networking/ssh">Security::SSH</a></li>
+	<li>install and configure wordpresss &#8211; <a href="https://github.com/cfengine/design-center/tree/master/sketches/web_apps/wordpress">WebApps::wordpress_install</a></li>
+</ul>
+</td></tr></table>
+<!-- end right -->
+
+<ul>
+	<li>more, and growing &#8211; <a href="https://github.com/cfengine/design-center">https://github.com/cfengine/design-center</a></li>
+</ul>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1 class="fullscreen">Extending the CFEngine Policy</h1>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>Install cf-sketch</h1>
+<ol>
+	<li>Copy 01_install_cfsketch.cf into place
+<pre class='code'>    
+    vagrant ssh cfhub
+    sudo -i
+    mkdir /var/cfengine/masterfiles/solutions
+    cp /vagrant/exercises/solutions/01_install_cfsketch.cf /var/cfengine/masterfiles/solutions
+</pre></li>
+	<li>add to body common control inputs in promises.cf</li>
+	<li>add method call in main</li>
+</ol>
+<pre class='code'>
+--- a/promises.cf
++++ b/promises.cf
+  inputs =&gt; { 
+             "cfengine_stdlib.cf", 
+             "firewall.cf",
++            "solutions/01_install_cfsketch.cf",
+            };
+...
+       comment   =&gt; "We want cf-serverd to be accessible, its especially
+                     import for the policyhub to have this port open.";
+ 
++  am_policy_hub::
++    "cf-sketch"
++      usebundle =&gt; install_cfsketch,
++      comment   =&gt; "Install cf-sketch so we can easily use the CFEngine desing center";
+</pre>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>What happened
+h1. Install VCS::vcs_mirror from Design Center</h1>
+<ol>
+	<li>Install VCS::vcs_mirror with cf-sketch
+<pre class='code'>
+/usr/local/bin/cf-sketch &#8212;install VCS::vcs_mirror
+</pre></li>
+	<li>Add to body common control inputs in promises.cf</li>
+	<li>Copy masterfiles mirror solution policy into place
+<pre class='code'>
+cp /vagrant/exercises/solutions/02_connect_to_central_git_repo.cf /var/cfengine/masterfiles/solutions
+</pre></li>
+	<li>Add to body common control inputs in promises.cf</li>
+	<li>Add method promise to mirror masterfiles
+<pre class='code'>
+<del>-</del> a/promises.cf
+<ins>+</ins> b/promises.cf
+  inputs =&gt; { 
+             &#8220;cfengine_stdlib.cf&#8221;, 
+             &#8220;firewall.cf&#8221;,
++            &#8220;solutions/02_connect_to_central_git_repo.cf&#8221;,
++            &#8220;sketches/VCS/vcs_mirror/main.cf&#8221;,
+            };
+&#8230;
+       comment   =&gt; &#8220;Install cf-sketch so we can easily use the CFEngine desing center&#8221;;
++
++    &#8220;masterfiles&#8221;
++      usebundle =&gt; mirror_masterfiles,
++      comment =&gt; &#8220;Masterfiles promises to be a mirror of the central repository&#8221;;
++
+</pre></li>
+</ol>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1 class="fullscreen">Before we get to far lets cover some fundamentals</h1>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>Definitions</h1>
+<p>Promises are the fundamental statements in CFEngine. Promises are the policy atoms. If there is no promise, nothing happens.</p>
+<p>However, promises can become quite complicated and readability becomes an issue, so it is useful to have a way of breaking them down into independent components. The structure of a promise is this:</p>
+<ul>
+	<li><strong>Promise</strong> &#8211; <em>A declaration about the state we desire to maintain (e.g., the permissions or contents of a file, the availability or absence of a service, the (de)installation of a package).</em></li>
+	<li><strong>Promiser</strong> &#8211; <em>This is the object that formally makes the promise. It is always the affected object, since objects can only make promises about their own state or behavior in CFEngine.</em></li>
+	<li><strong>Promisee (optional)</strong> &#8211; <em>This is a possible stakeholder, someone who is interested in the outcome of the promise. It is used as documentation, and it is used for reasoning in the commercial CFEngine product.</em></li>
+	<li><strong>Promise Body</strong> &#8211; <em>Everything else about a promise is defined in the body of the promise.</em></li>
+	<li><strong>Bundle</strong> &#8211; <em>A bundle is a collection of promises in a `sub-routine-like&#8217; container. Bundles also allow you to re-use promise code by parameterizing them.</em></li>
+	<li><strong>Body Part</strong> &#8211; <em>Templates for bodies to hide the details of complex promise specifications (with optional parameters like bundles). For complex body lists, you must fill in a body declaration as an `attachment&#8217; to the promise</em></li>
+</ul>
+<pre class='code'>
+bundle bundletype bundlename (optional paramaters){
+  type:
+     
+    contextclasses::
+     
+       "promiser" -&gt; { "promisee1", "promisee2", ... }
+                                 -------------------+
+           attribute_1 =&gt; value_1,                  |
+           attribute_2 =&gt; value_2, &lt;---Body Part    |
+           ...                                      |&lt;---Promise Body
+           attribute_n =&gt; value_n;                  |
+                                 -------------------+
+}
+</pre>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>Promise Types</h1>
+<ul>
+	<li>vars</li>
+	<li>classes</li>
+	<li>outputs</li>
+	<li>interfaces</li>
+	<li>files</li>
+	<li>packages</li>
+	<li>guest_environments</li>
+	<li>methods</li>
+	<li>processes</li>
+	<li>services</li>
+	<li>commands</li>
+	<li>storage</li>
+	<li>databases</li>
+	<li>reports</li>
+</ul>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>Decisions, Decisions</h1>
+<!-- begin left {} -->
+<table width='100%'><tr><td width='50%' markdown='block' style='vertical-align: top;'>
+
+<p>CFEngine decisions are made behind the scenes and the results of certain true/false propositions are cached in Booleans referred to as `classes&#8217;. There are no if-then-else statements in CFEngine; all decisions are made with classes.</p>
+<p>Classes fall into hard (discovered) and soft (user-defined) types.</p>
+</td>
+<!-- end left -->
+
+<!-- begin right {} -->
+<td width='50%' markdown='block' style='vertical-align: top;'>
+
+<h2>Hard Classes</h2>
+<ul>
+	<li>os name</li>
+	<li>hostname</li>
+	<li>time (Monday, Sept, Day9,Yr2012, Night, HR00, GMT_Hr00)</li>
+	<li>ip address</li>
+	<li>network interface names</li>
+</ul>
+</td></tr></table>
+<!-- end right -->
+
+<h2>Some hard classes
+<pre class='code'>
+cf3&gt;  &#8594; Defined classes = { 10_13_120_134 10_1_1_1 64_bit 8_cpus
+Afternoon Day11 GMT_Hr18 Hr13 Hr13_Q3 July Lcycle_2 Min30_35 Min32
+PK_MD5_1c54a80a00985fe28273d2566fa3d916 Q3 ThinkPad_W520_local
+Wednesday Yr2012 any cfengine cfengine_3 cfengine_3_3 cfengine_3_3_0
+common community_edition compiled_on_linux_gnu debian debian_wheezy
+fe80__800_27ff_fe00_0 fe80__f2de_f1ff_fe7d_9806 have_aptitude ipv4_10
+ipv4_10_1 ipv4_10_13 ipv4_10_13_120 ipv4_10_13_120_134 ipv4_10_1_1
+ipv4_10_1_1_1 linux linux_3_2_0_26_generic linux_x86_64
+linux_x86_64_3_2_0_26_generic
+linux_x86_64_3_2_0_26_generic__41_Ubuntu_SMP_Thu_Jun_14_17_49_24_UTC_2012
+mac_00_00_00_00_00_00 mac_0a_00_27_00_00_00 mac_f0_de_f1_7d_98_06
+net_iface_eth0 net_iface_tun0 net_iface_vboxnet0 thinkpad_w520 ubuntu
+ubuntu_12 ubuntu_12_4 verbose_mode x86_64 }
+</pre></h2>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1 class="fullscreen">Lets look at the policy</h1>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>What happened?</h1>
+<ul>
+	<li>Go look in /var/cfengine/outputs/</li>
+	<li>vcs_mirror made masterfiles a clean clone</li>
+	<li>Now its not auto updating anymore.</li>
+	<li>Lets clone the central repository and start pushing our changes there
+<pre class='code'>
+git clone masterfiles.git 
+cp -Rv masterfiles.before_gitify/* masterfiles/
+cd masterfiles
+cf-promises -f promises.cf
+git add .
+git rm cf_promises_validated
+git commit -m &#8220;Copy policy from before the fresh clone&#8221;
+git push
+</pre></li>
+</ul>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1 class="fullscreen">How did it happen?</h1>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>CFEngine Components</h1>
+<ul>
+	<li><strong>cf-agent</strong> &#8211; Change agent (This is the dangerous end)</li>
+	<li><strong>cf-execd</strong> &#8211; Scheduler (This runs cf-agent on and interval, and can send email reports to the administrator)</li>
+	<li><strong>cf-know</strong> &#8211; Knowledge modeler (builds and analyzes semantic knowledge network, Commercial Edition)</li>
+	<li><strong>cf-monitord</strong> &#8211; Passive monitoring agent (entropy, cpu, traffic, trend analysis, Commercial Edition)</li>
+	<li><strong>cf-promises</strong> &#8211; Promise validator (syntax checker)</li>
+	<li><strong>cf-runagent</strong> &#8211; Remote run agent (This is like a cow prod for cf-agent)</li>
+	<li><strong>cf-serverd</strong> &#8211; Server (Used to distribute files/policy, and respond to requests from cf-runagent)</li>
+	<li><strong>cf-report</strong> &#8211; Knowledge extractor (Converts data from embedded databases to human readable form, like last seen report)</li>
+	<li><strong>cf-key</strong> &#8211; Key generation tool (creates a public and private keypair for secure communication, like ssh-keygen)</li>
+	<li><strong>cf-hub</strong> &#8211; Data aggregator (used to collect informtion in the commercial product)</li>
+</ul>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1 class="fullscreen">Questions?</h1>
+
+</div>
+<div class='slide '>
+<!-- _S9SLIDE_ -->
+<h1>Notes</h1>
+<ul>
+	<li>This presentation is on github too</li>
+	<li>The examples worked at one time
+	<ul>
+		<li><a href="https://github.com/nickanderson/CFEngine-3-by-example-vagrant/commit/fbb35eecd1d071a772e4fc5a85e9db711473d2c8">SHA: fbb35eecd1d071a772e4fc5a85e9db711473d2c8</a> in my <a href="https://github.com/nickanderson/CFEngine-3-by-example-vagrant">CFEngine 3 by example Vagrant repository</a></li>
+	</ul></li>
+</ul></div>
+
+
+  </div> <!-- presentation -->
+</body>
+</html> 
+
