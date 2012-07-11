@@ -341,6 +341,6 @@ h1(fullscreen). Questions?
 
 h1. Notes
 {{ gradient silver white silver white }}
-* This presentation is on github too 
+* This presentation is on github too "nickanderson/presentations/Vagrant-and-CFEngine_Full-of-awesome-201207":https://github.com/nickanderson/presentations/tree/master/Vagrant-and-CFEngine_Full-of-awesome-201207
 * The examples worked at one time 
 ** "SHA: fbb35eecd1d071a772e4fc5a85e9db711473d2c8":https://github.com/nickanderson/CFEngine-3-by-example-vagrant/commit/fbb35eecd1d071a772e4fc5a85e9db711473d2c8 in my "CFEngine 3 by example Vagrant repository":https://github.com/nickanderson/CFEngine-3-by-example-vagrant
