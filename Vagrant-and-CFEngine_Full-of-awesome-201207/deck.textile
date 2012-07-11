@@ -10,6 +10,7 @@ h1(fullscreen). Vagrant & CFEngine: Full of Awesome
 Nick Anderson - July 2012
 
 h1. New Test Env Setup 
+{{ gradient silver white silver white }}
 {% left %}
 * New developers
 * New projects
@@ -24,6 +25,7 @@ h1. New Test Env Setup
 Usually manual instructions don't get updated.
 
 h1. Solution
+{{ gradient silver white silver white }}
 
 * Virtual Machines!
 
@@ -32,12 +34,14 @@ h1. Solution
 *(step) Not easily moved across platforms/bare metal
 
 h1. Better Solution
+{{ gradient silver white silver white }}
 
 h2. Distill configuration to simple form
 * Vagrant - Describe Virtual machines
 * CFEngine - Describe OS and application state configuration
 
 h1. Vagrant is
+{{ gradient silver white silver white }}
 * Written in Ruby
 * Wrapper for Virtualbox
 * Easy to get started
@@ -56,6 +60,7 @@ end
 }}}
 
 h1. CFEngine is
+{{ gradient silver white silver white }}
 * Written in C
 * Godfather of Configuration Managment systems
 * Difficult to get started
@@ -104,13 +109,15 @@ bundle edit_line training_sshd_config_harden_permitrootlogin{
 }}}
 
 h1. Getting Started with CFEngine and Vagrant
+{{ gradient silver white silver white }}
 
 h2. Sharing is careing, its on github, go forth and fork
 
 "*https://github.com/nickanderson/CFEngine-3-by-example-vagrant*":https://github.com/nickanderson/CFEngine-3-by-example-vagrant
 
 # Clone the project
-# Run make && vagrant up
+# Run make && vagrant up 
+** (you need to have installed Virtualbox, Vagrant, and the CFEngine provisioner)
 
 {{{
 cd /tmp
@@ -122,6 +129,7 @@ make && vagrant up
 
 
 h1. CFEngine Design Center
+{{ gradient silver white silver white }}
 {% left %}
 h2. What it is
 * Repository of community driven reusable policy
@@ -139,8 +147,10 @@ h2. Sketchs that can help you
 * more, and growing - "https://github.com/cfengine/design-center":https://github.com/cfengine/design-center
 
 h1(fullscreen). Extending the CFEngine Policy
+{{ gradient silver white silver white }}
 
 h1. Install cf-sketch
+{{ gradient silver white silver white }}
 
 # Copy 01_install_cfsketch.cf into place
 {{{    
@@ -170,8 +180,11 @@ h1. Install cf-sketch
 +      comment   => "Install cf-sketch so we can easily use the CFEngine desing center";
 }}}
 
-h1. What happened
+h1(fullscreen). What happened ?
+{{ gradient silver white silver white }}
+
 h1. Install VCS::vcs_mirror from Design Center
+{{ gradient silver white silver white }}
 
 # Install VCS::vcs_mirror with cf-sketch
 {{{
@@ -203,8 +216,10 @@ cp /vagrant/exercises/solutions/02_connect_to_central_git_repo.cf /var/cfengine/
 }}}
 
 h1(fullscreen). Before we get to far lets cover some fundamentals
+{{ gradient silver white silver white }}
 
 h1. Definitions
+{{ gradient silver white silver white }}
 
 Promises are the fundamental statements in CFEngine. Promises are the policy atoms. If there is no promise, nothing happens.
 
@@ -234,6 +249,7 @@ bundle bundletype bundlename (optional paramaters){
 }}}
 
 h1. Promise Types
+{{ gradient silver white silver white }}
 * vars
 * classes
 * outputs
@@ -250,7 +266,7 @@ h1. Promise Types
 * reports
 
 h1. Decisions, Decisions
-
+{{ gradient silver white silver white }}
 {% left %}
 CFEngine decisions are made behind the scenes and the results of certain true/false propositions are cached in Booleans referred to as `classes'. There are no if-then-else statements in CFEngine; all decisions are made with classes.
 
@@ -284,8 +300,10 @@ ubuntu_12 ubuntu_12_4 verbose_mode x86_64 }
 
 
 h1(fullscreen). Lets look at the policy
+{{ gradient silver white silver white }}
 
 h1. What happened?
+{{ gradient silver white silver white }}
 * Go look in /var/cfengine/outputs/
 * vcs_mirror made masterfiles a clean clone
 * Now its not auto updating anymore.
@@ -302,8 +320,10 @@ git push
 }}} 
 
 h1(fullscreen). How did it happen?
+{{ gradient silver white silver white }}
 
 h1. CFEngine Components
+{{ gradient silver white silver white }}
 
 * *cf-agent* - Change agent (This is the dangerous end)
 * *cf-execd* - Scheduler (This runs cf-agent on and interval, and can send email reports to the administrator)
@@ -317,8 +337,10 @@ h1. CFEngine Components
 * *cf-hub* - Data aggregator (used to collect informtion in the commercial product)
 
 h1(fullscreen). Questions?
+{{ gradient silver white silver white }}
 
 h1. Notes
+{{ gradient silver white silver white }}
 * This presentation is on github too 
 * The examples worked at one time 
 ** "SHA: fbb35eecd1d071a772e4fc5a85e9db711473d2c8":https://github.com/nickanderson/CFEngine-3-by-example-vagrant/commit/fbb35eecd1d071a772e4fc5a85e9db711473d2c8 in my "CFEngine 3 by example Vagrant repository":https://github.com/nickanderson/CFEngine-3-by-example-vagrant
