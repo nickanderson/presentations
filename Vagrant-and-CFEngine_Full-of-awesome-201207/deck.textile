@@ -116,7 +116,7 @@ h2. Sharing is caring, its on github, go forth and fork
 
 # Clone the project
 # Run make && vagrant up 
-** (you need to have installed Virtualbox, Vagrant, and the CFEngine provisioner)
+** (you need to have installed "Virtualbox":https://www.virtualbox.org, "Vagrant":http://vagrantup.com/, and the "CFEngine provisioner":https://github.com/cfengine/vagrant-cfengine-provisioner)
 
 {{{
 cd /tmp
