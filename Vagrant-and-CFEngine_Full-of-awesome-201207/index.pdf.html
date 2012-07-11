@@ -285,16 +285,19 @@ end
 	</ul></li>
 </ul>
 <pre class='code'>
-bundle agent training_sshd_config_harden_permitrootlogin{
+bundle agent example_sshd_config_harden{
   vars:
-    "bundlename" string =&gt; "training_sshd_config_harden_permitrootlogin";
+    "bundlename" string =&gt; "example_sshd_config_harden";
     "sshd_config_file" string =&gt; "/etc/ssh/sshd_config";
+
+    "ssh[PermitRootLogin]" string =&gt; "no";
+    "ssh[Protocol]" string =&gt; "2";
 
   files:
     "$(sshd_config_file)"
       handle    =&gt; "$(bundlename)_files_sshd_config",
       create    =&gt; "true",
-      edit_line =&gt; "training_sshd_config_harden_permitrootlogin",
+      edit_line =&gt; set_config_values("$(bundlename).ssh"),
       classes   =&gt; if_repaired("restart_sshd"),
       comment   =&gt; "Harden the sshd configuration.";
 
@@ -311,18 +314,6 @@ bundle agent training_sshd_config_harden_permitrootlogin{
       "I was able to successfully restart sshd"
         ifvarclass =&gt; "$(bundlename)_retarted_ssh";
 }
-bundle edit_line training_sshd_config_harden_permitrootlogin{
-  delete_lines:
-    "^\s*PermitRootLogin.*" -&gt; { "Security", "STIG GEN001120" }
-      handle  =&gt; "training_sshd_config_harden_permitrootlogin_delete_lines_permitrootlogin",
-      comment =&gt; "Clear up existing PermitRootLogin entries";
-
-  insert_lines:
-    "PermitRootLogin no   # GEN001120" -&gt; { "Security", "STIG GEN001120", "bofh@example.net"}
-      handle  =&gt; "training_sshd_config_harden_permitrootlogin_insert_lines_permitrootlogin",
-      comment =&gt; "Don't allow root to use SSH directly.";
-}
-
 
 </pre>
 

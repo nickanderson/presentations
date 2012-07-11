@@ -1,0 +1,29 @@
+bundle agent example_sshd_config_harden{
+  vars:
+    "bundlename" string => "example_sshd_config_harden";
+    "sshd_config_file" string => "/etc/ssh/sshd_config";
+
+    "ssh[PermitRootLogin]" string => "no";
+    "ssh[Protocol]" string => "2";
+
+  files:
+    "$(sshd_config_file)"
+      handle    => "$(bundlename)_files_sshd_config",
+      create    => "true",
+      edit_line => set_config_values("$(bundlename).ssh"),
+      classes   => if_repaired("restart_sshd"),
+      comment   => "Harden the sshd configuration.";
+
+  commands:
+    restart_sshd::
+      "/sbin/service"
+        args    => "sshd restart",
+        handle  => "$(bundlename)_commands_sshd_restart_after_hardening",
+        classes => "$(bundlename)_restarted_ssh",
+        comment => "Restart sshd after hardening the configuration";
+
+  reports:
+    restart_sshd::
+      "I was able to successfully restart sshd"
+        ifvarclass => "$(bundlename)_retarted_ssh";
+}
