@@ -1,13 +1,12 @@
 title: Vagrant & CFEngine: Full of Awesome
+footer: Nick Anderson
+subfooter: Vagrant & CFEngine: Full of Awesome - July 2012 
 
 h1(fullscreen). Vagrant & CFEngine: Full of Awesome
 {{ gradient silver white silver white }}
 
 !images/vagrant_logo.png!
 !images/enterprize_robot_big.png!
-
-
-Nick Anderson - July 2012
 
 h1. New Test Env Setup 
 {{ gradient silver white silver white }}
