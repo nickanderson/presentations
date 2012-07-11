@@ -1,7 +1,7 @@
 default: slideshow
 
 slideshow:
-	slideshow deck.textile
+	slideshow index.textile
 
 show:
-	$(BROWSER) deck.html
+	$(BROWSER) index.html
