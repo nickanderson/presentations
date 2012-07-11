@@ -110,7 +110,7 @@ bundle edit_line training_sshd_config_harden_permitrootlogin{
 h1. Getting Started with CFEngine and Vagrant
 {{ gradient silver white silver white }}
 
-h2. Sharing is careing, its on github, go forth and fork
+h2. Sharing is caring, its on github, go forth and fork
 
 "*https://github.com/nickanderson/CFEngine-3-by-example-vagrant*":https://github.com/nickanderson/CFEngine-3-by-example-vagrant
 
@@ -135,7 +135,7 @@ h2. What it is
 * Curated by CFEngine staff
 {% end %}
 {% right %}
-h2. Sketchs that can help you
+h2. Sketches that can help you
 * manage hosts file - "System::etc_hosts":https://github.com/cfengine/design-center/tree/master/sketches/system/etc_hosts
 * manage resolver - "System::config_resolver":https://github.com/cfengine/design-center/tree/master/sketches/system/config_resolver
 * manage timezone - "System::tzconfig":https://github.com/cfengine/design-center/tree/master/sketches/system/tzconfig
@@ -214,7 +214,7 @@ cp /vagrant/exercises/solutions/02_connect_to_central_git_repo.cf /var/cfengine/
 +
 }}}
 
-h1(fullscreen). Before we get to far lets cover some fundamentals
+h1(fullscreen). Before we get too far lets cover some fundamentals
 {{ gradient silver white silver white }}
 
 h1. Definitions
@@ -232,7 +232,7 @@ However, promises can become quite complicated and readability becomes an issue,
 * *Body Part* - _Templates for bodies to hide the details of complex promise specifications (with optional parameters like bundles). For complex body lists, you must fill in a body declaration as an `attachment' to the promise_
 
 {{{
-bundle bundletype bundlename (optional paramaters){
+bundle bundletype bundlename (optional parameters){
   type:
      
     contextclasses::
