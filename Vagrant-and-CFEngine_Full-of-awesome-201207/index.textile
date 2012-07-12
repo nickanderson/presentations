@@ -43,7 +43,7 @@ h1. Vagrant is
 {{ gradient silver white silver white }}
 * Written in Ruby
 * Wrapper for Virtualbox
-* Easy to get started
+* Low learning curve
 
 {{{
 Vagrant::Config.run do |config|
