@@ -53,7 +53,7 @@ h1. CFEngine is
 {{ gradient silver white silver white }}
 * Written in C
 * Godfather of Configuration Managment systems
-* Steeper learning curve
+* Steep learning curve
 **(step) It does get easier as your understanding of the system grows 
 
 {{{
