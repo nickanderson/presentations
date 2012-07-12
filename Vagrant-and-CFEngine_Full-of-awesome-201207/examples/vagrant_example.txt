@@ -1,0 +1,10 @@
+Vagrant::Config.run do |config|
+  config.vm.box = "centos_6_x86_64_minimal_4.1.12"
+  config.vm.box_url = "https://dl.dropbox.com/u/5861161/vagrant/CentOS-6.0-x86_64-netboot-4.1.12.box"
+  config.vm.boot_mode = :gui
+  config.vm.define :cfhub do |hub_config|
+    hub_config.vm.host_name="cfhub"
+    hub_config.vm.network :hostonly, "10.1.1.10"
+    config.vm.forward_port 80, 8080
+  end
+end
