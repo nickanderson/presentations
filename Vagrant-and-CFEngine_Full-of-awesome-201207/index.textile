@@ -62,8 +62,8 @@ h1. CFEngine is
 {{ gradient silver white silver white }}
 * Written in C
 * Godfather of Configuration Managment systems
-* Difficult to get started
-**(step) But it gets easier 
+* Steeper learning curve
+**(step) It does get easier as your understanding of the system grows 
 
 {{{
 {{ include examples/cfengine_example.cf }}
